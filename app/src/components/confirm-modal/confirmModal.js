@@ -8,7 +8,7 @@ const ConfirmModal = ({ modal, target, method }) => {
                 <p>Do you want to save changes?</p>
                 <p className="uk-text-right">
                     <button
-                        className="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
+                        className="uk-button uk-button-default uk-margin-small-right uk-modal-close" type="button">Cancel</button>
 
                     <button
                         className="uk-button uk-button-primary uk-modal-close"

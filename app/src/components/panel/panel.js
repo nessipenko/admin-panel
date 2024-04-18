@@ -12,11 +12,11 @@ const Panel = () => {
                 Save
             </button>
             <button
-                className="uk-button uk-button-default uk-margin-small-right" uk-toggle="target: #modal-meta">
+                className="uk-button uk-button-secondary uk-margin-small-right" uk-toggle="target: #modal-meta">
                 Edit META
             </button>
             <button
-                className="uk-button uk-button-default" uk-toggle="target: #modal-backup">
+                className="uk-button uk-button-danger" uk-toggle="target: #modal-backup">
                 Restore
             </button>
         </div>

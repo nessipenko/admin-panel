@@ -10,9 +10,9 @@ import ChooseModal from "../choose-modal";
 import Panel from "../panel";
 import EditorMeta from "../editor-meta";
 
+
 const Editor = () => {
     const [pageList, setPageList] = useState([]);
-    const [newPageName, setNewPageName] = useState("");
     const [currentPage, setCurrentPage] = useState("index.html");
     const [loading, setLoading] = useState(true);
     const [backupsList, setBackupsList] = useState([]);
@@ -160,6 +160,7 @@ const Editor = () => {
             <ConfirmModal modal={modal} target={'modal-save'} method={handleSaveButtonClick} />
             <ChooseModal modal={modal} target={'modal-open'} data={pageList} redirect={init} />
             <ChooseModal modal={modal} target={'modal-backup'} data={backupsList} redirect={restoreBackup} />
+            {virtualDom.current ? <EditorMeta modal={modal} target={'modal-meta'} virtualDom={virtualDom.current} /> : false}
         </>
     );
 };
