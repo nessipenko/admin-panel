@@ -33,14 +33,8 @@ const Editor = () => {
     const checkAuth = () => {
         axios
             .get('./api/checkAuth.php')
-
-            .then(res => {
-                setAuth(res.data.auth);
-            })
-
-            .catch(error => {
-                console.error("Error authorization", error);
-            });
+            .then(res => setAuth(res.data.auth))
+            .catch(error => console.error("Error authorization", error));
     }
 
     const login = (pass) => {
@@ -52,6 +46,7 @@ const Editor = () => {
                     setLoginError(!res.data.auth);
                     setLoginLenthError(false);
                 })
+                .catch(error => console.error("Error authorization", error));
         } else {
             setLoginError(false);
             setLoginLenthError(true);
@@ -61,12 +56,8 @@ const Editor = () => {
     const logout = () => {
         axios
             .get('./api/logout.php')
-            .then(() => {
-                window.location.replace('/')
-            })
-            .catch(error => {
-                console.error("Error authorization", error);
-            });
+            .then(() => window.location.replace('/'))
+            .catch(error => console.error("Error authorization", error));
     }
 
     const init = (e, page) => {
@@ -97,8 +88,8 @@ const Editor = () => {
             .then(html => axios.post('./api/saveTempPage.php', { html }))
             .then(() => iframe.current.load('../123o7y3o48ilh.html'))
             .then(() => axios.post('./api/deleteTempPage.php'))
-            .then(() => enableEditing())
-            .then(() => injectStyles())
+            .then(enableEditing)
+            .then(injectStyles)
             .then(cb)
 
             .catch(error => {
@@ -106,6 +97,7 @@ const Editor = () => {
             });
         loadBackupsList()
     };
+
 
     const save = () => {
         isLoading();
@@ -143,16 +135,12 @@ const Editor = () => {
     const injectStyles = () => {
         const style = iframe.current.contentDocument.createElement("style");
         style.innerHTML = `
-            text-editor:hover {
+            text-editor:hover,  [editableimgid]:hover {
                 outline: 3px solid orange;
                 outline-offset: 8px;
             }
             text-editor:focus {
                 outline: 3px solid red;
-                outline-offset: 8px;
-            }
-            [editableimgid]:hover{
-                outline: 3px solid orange;
                 outline-offset: 8px;
             }`
         iframe.current.contentDocument.head.appendChild(style);
@@ -161,18 +149,14 @@ const Editor = () => {
     const loadPageList = () => {
         axios
             .get('./api/pageList.php')
-            .then(res => {
-                setPageList(res.data);
-            })
+            .then(res => setPageList(res.data))
             .catch(err => console.error("Error loading page list:", err));
     };
 
     const loadBackupsList = () => {
         axios
             .get('./backups/backups.json')
-            .then(res => {
-                setBackupsList(res.data.filter(backup => backup.page === currentPage));
-            })
+            .then(res => setBackupsList(res.data.filter(backup => backup.page === currentPage)))
             .catch(err => console.error("Error loading backups list:", err));
     };
 
