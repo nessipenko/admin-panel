@@ -1,38 +1,32 @@
-export default class EditorText {
-    constructor(element, virtualElement) {
-        this.element = element;
-        this.virtualElement = virtualElement;
-        this.element.addEventListener("click", () => this.onClick());
-        this.element.addEventListener("blur", () => this.onBlur());
-        this.element.addEventListener("keypress", (e) => this.onKeypress(e));
-        this.element.addEventListener("input", () => this.onTextEdit());
-        if (this.element.parentNode.nodeName === "A" || this.element.parentNode.nodeName === "BUTTON") {
-            this.element.addEventListener("contextmenu", (e) => this.onCtxMenu(e));
-        }
+const EditorText = (element, virtualElement) => {
+    element.addEventListener('click', () => onClick())
+    element.addEventListener('blur', () => onBlur())
+    element.addEventListener('keypress', (e) => onKeypress(e))
+    element.addEventListener('input', () => onTextEdit())
+    if (element.parentNode.nodeName === "A" || element.parentNode.nodeName === "BUTTON") {
+        element.addEventListener("contextmenu", (e) => onCtxMenu(e));
     }
 
-    onCtxMenu(e) {
-        e.preventDefault();
-        this.onClick();
+    const onClick = () => {
+        element.contentEditable = 'true'
+        element.focus()
     }
-
-    onKeypress(e) {
+    const onBlur = () => {
+        element.removeAttribute('contenteditable')
+    }
+    const onKeypress = (e) => {
         if (e.keyCode === 13) {
-            this.element.blur();
+            element.blur();
         }
     }
-
-    onClick() {
-        this.element.contentEditable = "true";
-        this.element.focus();
+    const onTextEdit = () => {
+        virtualElement.innerHTML = element.innerHTML;
+        console.log('edit', element.innerHTML);
+    }
+    const onCtxMenu = (e) => {
+        e.preventDefault();
+        onClick();
     }
 
-    onBlur() {
-        this.element.removeAttribute('contenteditable');
-    }
-
-    onTextEdit() {
-        this.virtualElement.innerHTML = this.element.innerHTML;
-        console.log('edit', this.element.innerHTML);
-    }
 }
+export default EditorText;

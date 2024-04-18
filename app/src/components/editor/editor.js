@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import '../../helpers/iframeLoader.js';
-import { parseStrToDOM, serializeDomToStr, unwrapTextNodes, wrapTextNodes } from "../../helpers/dom-helper.js";
+import { parseStrToDOM, serializeDomToStr, unwrapImages, unwrapTextNodes, wrapImages, wrapTextNodes } from "../../helpers/dom-helper.js";
 import EditorText from "../editor-text";
 import UIkit from "uikit";
 import Spinner from "../spinner";
@@ -9,6 +9,8 @@ import ConfirmModal from "../confirm-modal";
 import ChooseModal from "../choose-modal";
 import Panel from "../panel";
 import EditorMeta from "../editor-meta";
+import EditorImages from "../editor-images";
+
 
 
 const Editor = () => {
@@ -41,6 +43,7 @@ const Editor = () => {
             .get(`../${page}?rnd=${Math.random()}`)
             .then(res => parseStrToDOM(res.data))
             .then(wrapTextNodes)
+            .then(wrapImages)
             .then(dom => {
                 virtualDom.current = dom;
                 return dom;
@@ -63,6 +66,7 @@ const Editor = () => {
         isLoading();
         const newDom = virtualDom.current.cloneNode(true);
         unwrapTextNodes(newDom);
+        unwrapImages(newDom);
         const html = serializeDomToStr(newDom);
         axios
             .post('./api/savePage.php', { pageName: currentPage, html })
@@ -82,6 +86,12 @@ const Editor = () => {
             const virtualElement = virtualDom.current.body.querySelector(`[nodeid="${id}"]`);
             new EditorText(element, virtualElement);
         });
+
+        iframeContent.body.querySelectorAll("[editableimgid]").forEach(element => {
+            const id = element.getAttribute("editableimgid");
+            const virtualElement = virtualDom.current.body.querySelector(`[editableimgid="${id}"]`);
+            new EditorImages(element, virtualElement);
+        });
     };
 
     const injectStyles = () => {
@@ -94,7 +104,11 @@ const Editor = () => {
             text-editor:focus {
                 outline: 3px solid red;
                 outline-offset: 8px;
-            }`;
+            }
+            [editableimgid]:hover{
+                outline: 3px solid orange;
+                outline-offset: 8px;
+            }`
         iframe.current.contentDocument.head.appendChild(style);
     };
 
@@ -155,6 +169,7 @@ const Editor = () => {
     return (
         <>
             <iframe ref={iframe} src=''></iframe>
+            <input id='img-upload' type="file" accept="image/*" style={{ display: 'none' }}></input>
             {spinner}
             <Panel />
             <ConfirmModal modal={modal} target={'modal-save'} method={handleSaveButtonClick} />

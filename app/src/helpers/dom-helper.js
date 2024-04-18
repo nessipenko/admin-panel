@@ -1,3 +1,5 @@
+import { element } from "prop-types";
+
 export const parseStrToDOM = (str) => {
     const parser = new DOMParser();
     return parser.parseFromString(str, "text/html");
@@ -37,3 +39,17 @@ export const unwrapTextNodes = (dom) => {
         element.parentNode.replaceChild(element.firstChild, element)
     })
 };
+
+export const wrapImages = (dom) => {
+    dom.body.querySelectorAll('img').forEach((img, i) => {
+        img.setAttribute('editableimgid', i)
+    })
+
+    return dom
+}
+
+export const unwrapImages = (dom) => {
+    dom.body.querySelectorAll('[editableimgid]').forEach(img => {
+        img.removeAttribute('editableimgid')
+    })
+}
