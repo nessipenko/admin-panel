@@ -21,7 +21,7 @@ const EditorText = (element, virtualElement) => {
     }
     const onTextEdit = () => {
         virtualElement.innerHTML = element.innerHTML;
-        console.log('edit', element.innerHTML);
+        og('edit', element.innerHTML);
     }
     const onCtxMenu = (e) => {
         e.preventDefault();

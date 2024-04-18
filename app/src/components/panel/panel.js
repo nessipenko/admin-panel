@@ -4,20 +4,29 @@ const Panel = () => {
     return (
         <div className="panel">
             <button
-                className="uk-button uk-button-primary uk-margin-small-right" uk-toggle="target: #modal-open">
+                className="uk-button uk-button-primary uk-margin-small-right"
+                uk-toggle="target: #modal-open">
                 Open
             </button>
             <button
-                className="uk-button uk-button-primary uk-margin-small-right" uk-toggle="target: #modal-save">
+                className="uk-button uk-button-primary uk-margin-small-right"
+                uk-toggle="target: #modal-save">
                 Save
             </button>
             <button
-                className="uk-button uk-button-secondary uk-margin-small-right" uk-toggle="target: #modal-meta">
+                className="uk-button uk-button-secondary uk-margin-small-right"
+                uk-toggle="target: #modal-meta">
                 Edit META
             </button>
             <button
-                className="uk-button uk-button-danger" uk-toggle="target: #modal-backup">
+                className="uk-button uk-button-default uk-margin-small-right"
+                uk-toggle="target: #modal-backup">
                 Restore
+            </button>
+            <button
+                className="uk-button uk-button-danger"
+                uk-toggle="target: #modal-logout">
+                Log out
             </button>
         </div>
     )

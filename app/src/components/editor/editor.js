@@ -10,7 +10,7 @@ import ChooseModal from "../choose-modal";
 import Panel from "../panel";
 import EditorMeta from "../editor-meta";
 import EditorImages from "../editor-images";
-
+import Login from "../login";
 
 
 const Editor = () => {
@@ -18,22 +18,67 @@ const Editor = () => {
     const [currentPage, setCurrentPage] = useState("index.html");
     const [loading, setLoading] = useState(true);
     const [backupsList, setBackupsList] = useState([]);
+    const [auth, setAuth] = useState(false);
+    const [loginError, setLoginError] = useState(false);
+    const [loginLenthError, setLoginLenthError] = useState(false);
 
     const iframe = useRef(null);
     const virtualDom = useRef(null);
 
     useEffect(() => {
+        checkAuth()
         init(null, currentPage);
-    }, [currentPage]);
+    }, [currentPage, auth]);
+
+    const checkAuth = () => {
+        axios
+            .get('./api/checkAuth.php')
+
+            .then(res => {
+                setAuth(res.data.auth);
+            })
+
+            .catch(error => {
+                console.error("Error authorization", error);
+            });
+    }
+
+    const login = (pass) => {
+        if (pass.length > 5) {
+            axios
+                .post('./api/login.php', { 'password': pass })
+                .then(res => {
+                    setAuth(res.data.auth);
+                    setLoginError(!res.data.auth);
+                    setLoginLenthError(false);
+                })
+        } else {
+            setLoginError(false);
+            setLoginLenthError(true);
+        }
+    }
+
+    const logout = () => {
+        axios
+            .get('./api/logout.php')
+            .then(() => {
+                window.location.replace('/')
+            })
+            .catch(error => {
+                console.error("Error authorization", error);
+            });
+    }
 
     const init = (e, page) => {
         if (e) {
             e.preventDefault();
         }
-        isLoading();
-        open(page, isLoaded, iframe);
-        loadPageList();
-        loadBackupsList();
+        if (auth) {
+            isLoading();
+            open(page, isLoaded, iframe);
+            loadPageList();
+            loadBackupsList();
+        }
     };
 
     const open = (page, cb) => {
@@ -170,13 +215,36 @@ const Editor = () => {
     const modal = true;
     const spinner = loading ? <Spinner active={true} /> : null;
 
+    if (!auth) {
+        return (
+            <Login login={login} lengthErr={loginLenthError} logErr={loginError} />
+        )
+    }
     return (
         <>
             <iframe ref={iframe} src=''></iframe>
             <input id='img-upload' type="file" accept="image/*" style={{ display: 'none' }}></input>
             {spinner}
             <Panel />
-            <ConfirmModal modal={modal} target={'modal-save'} method={handleSaveButtonClick} />
+            <ConfirmModal
+                modal={modal}
+                target={'modal-save'}
+                method={handleSaveButtonClick}
+                text={{
+                    title: 'Saving',
+                    descr: 'Do you want to save changes?',
+                    btn: 'Save'
+                }} />
+
+            <ConfirmModal
+                modal={modal}
+                target={'modal-logout'}
+                method={logout}
+                text={{
+                    title: 'Logout',
+                    descr: 'Do you want to logout?',
+                    btn: 'Log out'
+                }} />
             <ChooseModal modal={modal} target={'modal-open'} data={pageList} redirect={init} />
             <ChooseModal modal={modal} target={'modal-backup'} data={backupsList} redirect={restoreBackup} />
             {virtualDom.current ? <EditorMeta modal={modal} target={'modal-meta'} virtualDom={virtualDom.current} /> : false}
