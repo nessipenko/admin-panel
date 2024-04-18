@@ -1,7 +1,7 @@
 import axios from "axios";
 import React from "react";
 
-const EditorImages = (element, virtualElement) => {
+const EditorImages = (element, virtualElement, ...[isLoading, isLoaded, showNotifications]) => {
 
     element.addEventListener('click', () => onClick())
     const imgUploader = document.querySelector('#img-upload');
@@ -12,6 +12,7 @@ const EditorImages = (element, virtualElement) => {
             if (imgUploader.files && imgUploader.files[0]) {
                 let formData = new FormData();
                 formData.append('image', imgUploader.files[0]);
+                isLoading();
                 axios
                     .post('./api/uploadImage.php', formData, {
                         headers: {
@@ -21,7 +22,12 @@ const EditorImages = (element, virtualElement) => {
                     })
                     .then((res) => {
                         virtualElement.src = element.src = `./img/${res.data.src}`
+
+                    })
+                    .catch(() => showNotifications('Error uploading image', 'danger'))
+                    .finally(() => {
                         imgUploader.value = ''
+                        isLoaded();
                     })
             }
         })

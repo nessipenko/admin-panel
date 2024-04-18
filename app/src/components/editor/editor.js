@@ -62,7 +62,7 @@ const Editor = () => {
         loadBackupsList()
     };
 
-    const save = (onSuccess, onError) => {
+    const save = () => {
         isLoading();
         const newDom = virtualDom.current.cloneNode(true);
         unwrapTextNodes(newDom);
@@ -72,9 +72,10 @@ const Editor = () => {
             .post('./api/savePage.php', { pageName: currentPage, html })
             .then(() => {
                 loadBackupsList();
-                onSuccess()
+                showNotifications('Successfully saved', 'success');
+
             })
-            .catch(onError)
+            .catch(() => showNotifications('Error saving', 'danger'))
             .finally(isLoaded);
     };
 
@@ -90,7 +91,7 @@ const Editor = () => {
         iframeContent.body.querySelectorAll("[editableimgid]").forEach(element => {
             const id = element.getAttribute("editableimgid");
             const virtualElement = virtualDom.current.body.querySelector(`[editableimgid="${id}"]`);
-            new EditorImages(element, virtualElement);
+            new EditorImages(element, virtualElement, isLoading, isLoaded, showNotifications);
         });
     };
 
@@ -155,6 +156,9 @@ const Editor = () => {
         setLoading(false);
     };
 
+    const showNotifications = (message, status) => {
+        UIkit.notification({ message, status });
+    }
     const handleSaveButtonClick = () => {
         save(() => {
             UIkit.notification({ message: 'Successfully saved', status: 'success' });
